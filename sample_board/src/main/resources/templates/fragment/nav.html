@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/">Logo</a>
+			<div class="collapse navbar-collapse" id="mynavbar">
+				<ul class="navbar-nav me-auto" sec:authorize="isAnonymous()">
+					<li class="nav-item"><a class="nav-link" href="/member/join">회원가입</a></li>
+					<li class="nav-item"><a class="nav-link" href="/member/login">로그인</a></li>
+					<li class="nav-item"><a class="nav-link" href="/member/find">아이디 찾기</a></li>
+					<li class="nav-item"><a class="nav-link" href="/">게시판</a></li>
+				</ul>
+				<ul class="navbar-nav me-auto" sec:authorize="isAuthenticated()">
+					<li class="nav-item"><a class="nav-link" href="/board/write">글쓰기</a></li>
+					<li class="nav-item"><a class="nav-link" href="#" id="logout">로그아웃</a></li>
+					<li class="nav-item"><a class="nav-link" href="/member/readme">내정보</a></li>
+					<li class="nav-item"><a class="nav-link" href="/">게시판</a></li>
+				</ul>
+			</div>
+		</div>
+		<script>
+			// 로그아웃 처리
+			$('#logout').click(function() {
+				const token = '[[${_csrf.token}]]';
+				const html = `
+					<form action="/member/logout" method="post">
+						<input type='hidden' name='_csrf' value='${token}'>
+					</form>
+				`;
+				$(html).appendTo($('body')).submit();
+			});
+		</script>
+	</nav>
+</body>
+</html>
+
+
+
+
+
+

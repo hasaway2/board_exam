@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.BoardDao">
+	<insert id="save" parameterType="com.example.demo.entity.Board">
+		<selectKey order="BEFORE" resultType="long" keyProperty="bno">
+			<!--  main sql보다 먼저 select를 실행한 다음 그 결과를 파라미터에 집어넣는다 -->
+			select board_seq.nextval from dual
+		</selectKey>
+		insert into board(bno, title, content, writer, write_time, read_cnt, good_cnt, bad_cnt, is_deleted)
+		values(#{bno}, #{title}, #{content}, #{writer}, sysdate, 0, 0, 0, 0)
+	</insert>
+	
+	<select id="findAll" resultType="com.example.demo.dto.BoardDto$BoardList">
+		<!-- CDATA : XML 파서에게 XML이 아니니 분석하지 말라고 선언 -->
+		<![CDATA[
+			select * from
+			(
+			    select rownum as rnum, b.* from
+			        (
+			        	select /*+ index_desc(board board_pk_bno) */ bno, title, writer,  
+			         	to_char(write_time, 'yyyy-mm-dd hh24:mi:ss') as writeTime, read_cnt from board
+							) b
+			    where rownum<=#{endRowNum}    
+			)
+			where rnum>=#{startRowNum}
+		]]>
+	</select>
+	<!--
+		마이바티스가 sql 실행결과를 가지고 resultType 객체를 만들 수 있으면 문제 없다
+		resultType 객체를 생성못하면 개발자가 어떻게 결과 객체를 만들라고 가르쳐줘야 한다 -> resultMap  
+	-->
+	<resultMap id="findByIdMap" type="com.example.demo.dto.BoardDto$Read">
+		<id column="bno" property="bno" />
+		<result column="title" property="title"/>
+		<result column="content" property="content"/>
+		<result column="writer" property="writer"/>
+		<result column="writeTime" property="writeTime"/>
+		<result column="read_cnt" property="readCnt"/>
+		<result column="good_cnt" property="goodCnt"/>
+		<result column="bad_cnt" property="badCnt"/>
+		<result column="is_deleted" property="isDeleted" />
+		
+		<collection property="comments" javaType="java.util.List" ofType="com.example.demo.dto.CommentDto$Read">
+			<id column="ccno" property="cno" />
+			<result column="cwriter" property="writer"/>
+			<result column="ccontent" property="content"/>
+			<result column="cwriteTime" property="writeTime"/>
+		</collection>
+
+	</resultMap>
+	
+	<select id="findById" resultMap="findByIdMap">
+		select b.bno, b.title, b.content, b.writer, to_char(b.write_time, 'yyyy-mm-dd hh24:mi:ss') as writeTime, 
+		b.read_cnt, b.good_cnt, b.bad_cnt, b.is_deleted,
+		c.cno as ccno , c.writer as cwriter, c.content as ccontent, to_char(c.write_time, 'yyyy-mm-dd hh24:mi:ss') as cwriteTime
+		from board b left outer join comments c on b.bno=c.bno where b.bno=#{bno} order by c.cno desc
+	</select>
+		
+	<update id="update">
+		update board 
+		<set>
+			<if test="title!=null">
+				title=#{title},
+			</if>
+			<if test="content!=null">
+				content=#{content},
+			</if>
+			<if test="readCnt!=null">
+				read_cnt=read_cnt+1,
+			</if>
+			<if test="goodCnt!=null">
+				good_cnt=good_cnt+1,
+			</if>
+			<if test="badCnt!=null">
+				bad_cnt=bad_cnt+1,
+			</if>
+		</set>
+		where bno=#{bno} and rownum=1
+	</update>
+	
+	<delete id="deleteByBno">
+		update board set is_deleted=1 where bno=#{bno} and rownum=1
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

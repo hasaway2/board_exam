@@ -1,0 +1,16 @@
+drop table member;
+
+create table member (
+    username varchar2(10 char),
+    password varchar2(60 char),
+    email varchar2(30 char),
+    joinday date,
+    birthday date,
+    profile varchar2(15 char),
+    login_fail_count number(1),
+    enabled number(1),
+    role varchar2(10 char),
+    constraint member_pk_username primary key(username)
+);
+
+

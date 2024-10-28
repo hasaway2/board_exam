@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+	#message {
+		text-align: center;
+		color: red;
+	}
+</style>
+</head>
+<body>
+	<div id="app">
+		<h1>작업을 수행하지 못했습니다</h1>
+		<p>이유 : <span id="message" th:text="${message}"></span></p>
+	</div>
+</body>
+</html>

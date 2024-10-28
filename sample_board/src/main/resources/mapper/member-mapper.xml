@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- xml 문서는 xml version으로 시작-->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	xml 문서는 사용자 정의 태그 -> xml 문서를 제대로 만들었는 지 검증할 방법이 필요
+	!DOCTYPE은 문서의 종류와 검증방법을 지정한다 -> dtd가 xml 문서를 제대로 만들었는 지 검증하는 xml 문서 작성 표준
+ -->
+ <mapper namespace="com.example.demo.dao.MemberDaoMyBatisWithXml" >
+<!-- 이 xml 파일과 함께 작업할 DAO의 패키지를 전체이름 -->
+	
+	<!-- 
+		resultType에 사용한 int, string은 실제로는 java.lang.Integer, java.lang.String 클래스의 단축어(typealias) 
+	 -->
+	<select id="countByUsername" resultType="int">
+		select count(username) from member where username=#{username} and rownum=1
+	</select>
+	
+	<select id="findByUsername" resultType="com.example.demo.entity.Member">
+		select * from member where username=#{username} and rownum=1
+	</select>
+	
+	<select id="findUsernameByEmail" resultType="string">
+		select username from member where email=#{email} and rownum=1
+	</select>
+	
+	<delete id="deleteByUsername">
+		delete from member where username=#{username} and rownum=1
+	</delete>
+	
+	<insert id="save">
+		insert into member(username, password, email, joinday, birthday, profile, login_fail_count, enabled, role)
+		values(#{username}, #{password}, #{email}, #{joinday}, #{birthday}, #{profile}, #{loginFailCount}, #{enabled}, #{role})
+	</insert>
+	
+	<!-- mybatis 동적쿼리 -->
+	<update id="update">
+		update member
+		<set>
+			<if test="email!=null">
+				email=#{email},
+			</if>
+			<if test="password!=null">
+				password=#{password},
+			</if>
+			<if test="loginFailCount!=null">
+				login_fail_count=#{loginFailCount},
+			</if>
+			<if test="enabled!=null">
+				enabled = #{enabled},
+			</if>
+		</set>
+		where username=#{username} and rownum=1
+	</update>
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
